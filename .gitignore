@@ -4,3 +4,4 @@ results/**/*.html
 .classpath
 .project
 .settings/
+target/
