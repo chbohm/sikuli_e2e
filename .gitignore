@@ -1,0 +1,6 @@
+./results/*.png
+results/**/*.png
+results/**/*.html
+.classpath
+.project
+.settings/
