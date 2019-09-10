@@ -8,8 +8,8 @@ import com.sun.jna.platform.DesktopWindow;
 public class Exists<PFRML> extends SikuliCommand<Void, Void, Boolean> {
 	private PFRML item;
 
-	public Exists(DesktopWindow window, App app, PFRML item) {
-		super(window, app, null);
+	public Exists(DesktopWindow window, PFRML item) {
+		super(window, null);
 		this.item = item;
 	}
 

@@ -11,9 +11,9 @@ public class EvaluationsApp extends SikuliRunner {
 		startChrome();
 		gotoUrl("https://hrsuat.hexacta.com/hrs-intranet/login.do");
 
-		if (exists("advanced.configuration.button.png")) {
-			click("advanced.configuration.button.png");
-			click("access.to.unsecure.site.png");
+		if (exists("chrome/advanced.configuration.button.png")) {
+			click("chrome/advanced.configuration.button.png");
+			click("chrome/access.to.unsecure.site.png");
 		}
 	}
 
@@ -30,14 +30,14 @@ public class EvaluationsApp extends SikuliRunner {
 		Debug.info("Pasting!!");
 		paste(userNameTxt, user);
 		paste(passTxt, pass);
-		click("signIn.button.png");
+		click("hrs/signIn.button.png");
 		//this.region.saveScreenCapture("./results/region.png");
 	}
 
 	public void gotToManageEmployees() {
-		click("people.menu.png");
-		click("manage.employees.submenu.png");
-		if (!exists("manage.employees.title.png")) {
+		click("hrs/people.menu.png");
+		click("hrs/manage.employees.submenu.png");
+		if (!exists("hrs/manage.employees.title.png")) {
 			throw new RuntimeException("Could not go to Manage Employees");
 		}
 

@@ -11,7 +11,7 @@ import com.hexacta.sikuli.evaluations.EvaluationsApp;
 /**
  * Unit test for simple App.
  */
-public class AppTest {
+public class HRSTest {
 	private static EvaluationsApp app;
 
 	@BeforeClass
@@ -35,17 +35,17 @@ public class AppTest {
 	@Test
 	public void findUser_Successful() {
 		app.gotToManageEmployees();
-		app.paste(app.getTextFieldRegion("lastName.label.png"), "Bohm");
+		app.paste(app.getTextFieldRegion("hrs/lastName.label.png"), "Bohm");
 		app.click("ok.button.png");
-		Assert.assertTrue(app.exists("bohmRow.png"));
+		Assert.assertTrue(app.exists("hrs/bohmRow.png"));
 	}
 
 	@Test
 	public void findUser_empty() {
 		app.gotToManageEmployees();
-		app.paste(app.getTextFieldRegion("lastName.label.png"), "@@");
+		app.paste(app.getTextFieldRegion("hrs/lastName.label.png"), "@@");
 		app.click("ok.button.png");
-		Assert.assertTrue(app.exists("no.data.found.png"));
+		Assert.assertTrue(app.exists("hrs/no.data.found.png"));
 	}
 
 }

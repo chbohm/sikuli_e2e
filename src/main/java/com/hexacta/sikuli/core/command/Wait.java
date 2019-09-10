@@ -10,12 +10,12 @@ public class Wait<PFRML> extends SikuliCommand<Void, Void, Match> {
 	private PFRML item;
 	private Double secs;
 
-	public Wait(DesktopWindow window, App app, PFRML item) {
-		this(window, app, null, null);
+	public Wait(DesktopWindow window, PFRML item) {
+		this(window, null, null);
 	}
 
-	public Wait(DesktopWindow window, App app, PFRML item, Double secs) {
-		super(window, app, null);
+	public Wait(DesktopWindow window, PFRML item, Double secs) {
+		super(window, null);
 		this.item = item;
 		this.secs = secs;
 	}

@@ -1,18 +1,12 @@
 package com.hexacta.sikuli.core.command;
 
-import java.awt.Rectangle;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.sikuli.natives.SysUtil;
-import org.sikuli.script.App;
-import org.sikuli.script.App.AppEntry;
 import org.sikuli.script.FindFailed;
-import org.sikuli.script.Key;
-import org.sikuli.script.KeyModifier;
 import org.sikuli.script.Location;
 import org.sikuli.script.Mouse;
 import org.sikuli.script.Region;
@@ -28,7 +22,6 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 
 	protected long id;
 	protected DesktopWindow window;
-	protected App app;
 	protected PFRML targetImage;
 
 	protected Screen screen;
@@ -52,27 +45,26 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 
 	}
 
-	public SikuliCommand(DesktopWindow window, App app, PFRML targetImage) {
+	public SikuliCommand(DesktopWindow window, PFRML targetImage) {
+		this(window, null, targetImage);
+	}
+
+	public SikuliCommand(DesktopWindow window, Region region, PFRML targetImage) {
 		super();
 		id = nextId;
 		nextId++;
 		this.window = window;
-		this.app = app;
 		this.targetImage = targetImage;
 		this.screen = Screen.getPrimaryScreen();
-		this.region = Region.create(this.screen);
+		if (region == null) {
+			region = Region.create(Screen.getPrimaryScreen());
+		}
+		this.region = region;
 	}
 
 	protected void preApply() {
-		User32.INSTANCE.SetFocus(this.window.getHWND());
-		this.screen.saveScreenCapture(new File("./results").getAbsolutePath());
-		// Preconditions.checkNotNull(app.focus(), "Could not focus the app");
-		moveWindowToPrimaryScreen();
+		Utils.showWindow(this.window);
 		moveMouseIntoRegion();
-	}
-
-	private void moveWindowToPrimaryScreen() {
-		Utils.moveWindow(this.window, 0, 0, this.screen.w, this.screen.h);
 	}
 
 	public ReturnType apply() {

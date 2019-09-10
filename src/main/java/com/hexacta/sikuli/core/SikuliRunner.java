@@ -1,8 +1,10 @@
 package com.hexacta.sikuli.core;
 
 import java.io.File;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.stream.Collectors;
 
 import org.sikuli.basics.Settings;
 import org.sikuli.script.App;
@@ -11,17 +13,19 @@ import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
 import org.sikuli.script.Match;
 import org.sikuli.script.Region;
-import org.sikuli.script.Screen;
 
-import com.google.common.base.Preconditions;
 import com.hexacta.sikuli.core.command.CommandFactory;
 import com.hexacta.sikuli.core.command.SikuliCommand;
+import com.sun.jna.platform.DesktopWindow;
+import com.sun.jna.platform.WindowUtils;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef.HWND;
 
 public class SikuliRunner {
-	private App currentApp;
 
 	private Queue<SikuliCommand<?, ?, ?>> commands = new LinkedBlockingDeque<SikuliCommand<?, ?, ?>>();
 	private CommandFactory commandFactory = new CommandFactory();
+	private DesktopWindow window;
 
 	public SikuliRunner() {
 		ImagePath.setBundlePath("./images");
@@ -33,11 +37,30 @@ public class SikuliRunner {
 	}
 
 	public void startChrome() {
-		System.out.println("starting");
-		currentApp = App.focus("\"c:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"");
-		Preconditions.checkNotNull(currentApp);
-		commandFactory.init(currentApp);
-		commandFactory.wait("chrome.back.button.png", 10.0).apply();
+		// WindowUtils.getAllWindows(true).stream().filter(w ->)
+		this.window = getAppWindow("\"c:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"");
+		App.focus("\"c:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"");
+		commandFactory.init(this.window);
+		commandFactory.wait("chrome/chrome.back.button.png", 10.0).apply();
+	}
+
+	public void initMobileMirror() {
+		List<DesktopWindow> windows = WindowUtils.getAllWindows(true).stream()
+				.filter(w -> w.getFilePath().endsWith("ApowerMirror.exe")).collect(Collectors.toList());
+		this.window = windows.get(3);
+		Utils.moveWindow(window, 0, 0);
+		Utils.showWindow(window);
+		Utils.moveMouse(Utils.getWindowsRectangle(window.getHWND()));
+		commandFactory.init(window);
+		commandFactory.wait("android/home.button", 10.0).apply();
+	}
+
+	private DesktopWindow getAppWindow(String exePath) {
+		App.focus(exePath);
+		HWND foregroundWindow = User32.INSTANCE.GetForegroundWindow();
+		List<DesktopWindow> appWindow = WindowUtils.getAllWindows(true).stream()
+				.filter(w -> w.getHWND().equals(foregroundWindow)).collect(Collectors.toList());
+		return appWindow.get(0);
 	}
 
 	public void closeChrome() {
@@ -102,17 +125,30 @@ public class SikuliRunner {
 		target = resolve(target);
 		return this.commandFactory.find(target).apply();
 	}
-
-	public <PSI> Match wait(PSI target, Double seconds) {
+	
+	public <PSI> Match find(Region region, PSI target) {
 		target = resolve(target);
-		return this.commandFactory.wait(target, seconds).apply();
+		return this.commandFactory.find(region, target).apply();
 	}
 
 	public Region findText(String text) {
 		return this.commandFactory.findText(text).apply();
 	}
+	
+	public Region findText(Region region, String text) {
+		return this.commandFactory.findText(region, text).apply();
+	}
+
+
+	
+	public <PSI> Match wait(PSI target, Double seconds) {
+		target = resolve(target);
+		return this.commandFactory.wait(target, seconds).apply();
+	}
+
 
 	public <PFRML> int click(PFRML target) {
+		System.out.println("Clicking in " + target.toString());
 		target = resolve(target);
 		return this.commandFactory.click(target).apply();
 	}
@@ -132,6 +168,10 @@ public class SikuliRunner {
 			return (PFRML) file.getAbsolutePath();
 		}
 		return target;
+	}
+
+	public Region getAppRegion() {
+		return new Region(Utils.getWindowsRectangle(this.window.getHWND()));
 	}
 
 	public synchronized void processCommands() {

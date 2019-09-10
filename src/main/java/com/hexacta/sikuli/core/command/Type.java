@@ -1,8 +1,5 @@
 package com.hexacta.sikuli.core.command;
 
-import org.sikuli.script.App;
-import org.sikuli.script.Region;
-
 import com.sun.jna.platform.DesktopWindow;
 
 public class Type<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
@@ -10,8 +7,8 @@ public class Type<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
 	protected String text;
 	protected Integer keyModifier;
 
-	public Type(DesktopWindow window, App app, PFRML targetImage, String text, Integer keyModifier) {
-		super(window, app, targetImage);
+	public Type(DesktopWindow window, PFRML targetImage, String text, Integer keyModifier) {
+		super(window, targetImage);
 		this.text = text;
 		this.keyModifier = keyModifier;
 	}

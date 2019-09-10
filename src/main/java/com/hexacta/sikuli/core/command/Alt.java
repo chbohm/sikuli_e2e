@@ -7,7 +7,7 @@ import com.sun.jna.platform.DesktopWindow;
 
 public class Alt<PFRML> extends Type<PFRML> {
 
-	public Alt(DesktopWindow window, App app, PFRML targetImage, String text) {
-		super(window, app, targetImage, text, KeyModifier.CTRL);
+	public Alt(DesktopWindow window, PFRML targetImage, String text) {
+		super(window, targetImage, text, KeyModifier.CTRL);
 	}
 }
