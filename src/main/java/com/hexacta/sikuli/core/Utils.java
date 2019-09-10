@@ -122,4 +122,8 @@ public class Utils {
 		int height = rect.bottom - rect.top;
 		return new Rectangle(rect.top, rect.left, width, height);
 	}
+	
+	public static String toString(Rectangle rectangle) {
+		return String.format("R[%s,%s,%s,%s]", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+	}
 }

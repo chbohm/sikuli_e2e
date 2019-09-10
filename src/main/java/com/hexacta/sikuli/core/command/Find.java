@@ -1,8 +1,10 @@
 package com.hexacta.sikuli.core.command;
 
+
 import org.sikuli.script.Match;
 import org.sikuli.script.Region;
 
+import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 
 public class Find<PFRML> extends SikuliCommand<Void, Void, Match> {
@@ -24,6 +26,10 @@ public class Find<PFRML> extends SikuliCommand<Void, Void, Match> {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public String toString() {
+		return String.format("Find(\"%s\") in %s", item.toString(), Utils.toString(region.getRect()));
 	}
 
 }

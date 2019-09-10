@@ -1,11 +1,8 @@
 package com.hexacta.sikuli.core.command;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.function.Function;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.sikuli.basics.Debug;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Location;
 import org.sikuli.script.Mouse;
@@ -15,11 +12,13 @@ import org.sikuli.script.Screen;
 import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.User32Util;
 
 public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Function<ParamType, ReturnType> {
 
 	private static long nextId = 1;
 
+	protected int retries = 3;
 	protected long id;
 	protected DesktopWindow window;
 	protected PFRML targetImage;
@@ -27,23 +26,7 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 	protected Screen screen;
 	protected Region region;
 
-	private static String HTML_TEMPLATE;
-	private static String ERROR_DESCRIPTION_TEMPLATE;
-
-	static {
-		HTML_TEMPLATE = "<html><body>\n";
-		HTML_TEMPLATE += "<div><h1>Command: %s</h1>\n";
-		HTML_TEMPLATE += "%s\n";
-		HTML_TEMPLATE += "</body></html>";
-
-		ERROR_DESCRIPTION_TEMPLATE = "<div>The image</div>";
-		ERROR_DESCRIPTION_TEMPLATE += "<img src='%s'/>";
-		ERROR_DESCRIPTION_TEMPLATE += "<div>was not found in</div>";
-		ERROR_DESCRIPTION_TEMPLATE += "<img src='%s'/>";
-		ERROR_DESCRIPTION_TEMPLATE += "<div><h2>Stack Trace</h2></div>";
-		ERROR_DESCRIPTION_TEMPLATE += "<div>%s</div>";
-
-	}
+	private SikuliErrorHandler<PFRML> errorHandler = new SikuliErrorHandler<PFRML>();
 
 	public SikuliCommand(DesktopWindow window, PFRML targetImage) {
 		this(window, null, targetImage);
@@ -68,14 +51,21 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 	}
 
 	public ReturnType apply() {
+		Debug.info(this.toString());
 		try {
 			preApply();
 			return this.doApply();
 		} catch (RuntimeException e) {
 			if (e.getCause() instanceof FindFailed) {
-				writeError();
+				errorHandler.writeError(this.id, this.screen, this.targetImage);
 			}
-			throw e;
+			if (retries == 0) {
+				Debug.error("Failed! Giving up.");
+				throw e;
+			}
+			retries--;
+			Debug.info(String.format("Retrying %s. Number of retries left: %s", this, Integer.valueOf(retries)));
+			return apply();
 		}
 	}
 
@@ -89,45 +79,9 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 		Location loc = Mouse.at();
 		loc.x = loc.x < 20 ? 20 : loc.x;
 		loc.y = loc.y < 20 ? 20 : loc.y;
-		Mouse.move(loc);
+		User32.INSTANCE.SetCursorPos(loc.x, loc.y);
+		// Mouse.move(loc);
 		Utils.wait(100);
-	}
-
-	private void writeError() {
-		String imageNotFoundPath = writeImageNotFound(this.targetImage);
-		String regionImagePath = saveCapture(this.screen);
-
-		String className = this.getClass().getSimpleName();
-		String fileName = this.id + "_" + className + ".html";
-		File file = new File(Utils.RESULT_FOLDER, fileName);
-
-		String error = String.format(HTML_TEMPLATE, className, getContextHtml(imageNotFoundPath, regionImagePath));
-
-		try (FileWriter w = new FileWriter(file)) {
-			w.write(error);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private String writeImageNotFound(PFRML imageNotFound) {
-		if (imageNotFound instanceof String) {
-			return (String) imageNotFound;
-		}
-
-		if (imageNotFound instanceof Region) {
-			return saveCapture((Region) imageNotFound);
-		}
-		return "";
-	}
-
-	private String saveCapture(Region region) {
-		return this.screen.saveScreenCapture(Utils.RESULT_FOLDER, this.id + "_region" + ".png");
-	}
-
-	private String getContextHtml(String notFoundImageFileName, String regionImageFileName) {
-		return String.format(ERROR_DESCRIPTION_TEMPLATE, notFoundImageFileName, regionImageFileName,
-				ExceptionUtils.getStackTrace(new RuntimeException()));
 	}
 
 }

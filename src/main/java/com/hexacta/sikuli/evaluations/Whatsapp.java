@@ -46,6 +46,7 @@ public class Whatsapp extends AndroidApp {
 		while (backButton != null && retries > 0) {
 			retries--;
 			backButton.click();
+			Utils.wait(200);
 		}
 	}
 

@@ -1,6 +1,5 @@
 package com.hexacta.sikuli.core.command;
 
-import org.sikuli.script.App;
 import org.sikuli.script.KeyModifier;
 
 import com.sun.jna.platform.DesktopWindow;

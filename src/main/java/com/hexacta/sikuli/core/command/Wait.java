@@ -1,8 +1,6 @@
 package com.hexacta.sikuli.core.command;
 
-import org.sikuli.script.App;
 import org.sikuli.script.Match;
-import org.sikuli.script.Region;
 
 import com.sun.jna.platform.DesktopWindow;
 

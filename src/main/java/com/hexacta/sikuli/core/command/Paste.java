@@ -2,6 +2,7 @@ package com.hexacta.sikuli.core.command;
 
 import org.sikuli.script.FindFailed;
 
+import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 
 public class Paste<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
@@ -27,6 +28,10 @@ public class Paste<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
 		} catch (FindFailed e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public String toString() {
+		return String.format("Paste \"%s\" in %s", this.text, Utils.toString(this.region.getRect()));
 	}
 
 }

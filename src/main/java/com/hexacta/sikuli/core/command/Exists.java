@@ -1,8 +1,6 @@
 package com.hexacta.sikuli.core.command;
 
-import org.sikuli.script.App;
-import org.sikuli.script.Region;
-
+import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 
 public class Exists<PFRML> extends SikuliCommand<Void, Void, Boolean> {
@@ -21,5 +19,10 @@ public class Exists<PFRML> extends SikuliCommand<Void, Void, Boolean> {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public String toString() {
+		return String.format("Exists(\"%s\") in %s", item.toString(), Utils.toString(region.getRect()));
+	}
+
 
 }

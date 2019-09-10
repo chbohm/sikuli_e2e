@@ -22,5 +22,10 @@ public class Click<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public String toString() {
+		return String.format("Click in %s", this.region.getCenter());
+	}
+
 
 }
