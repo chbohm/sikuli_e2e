@@ -3,14 +3,13 @@ package com.hexacta.sikuli.whatsapp;
 import org.sikuli.script.Region;
 
 import com.hexacta.sikuli.core.AndroidApp;
-import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 
 public class Whatsapp extends AndroidApp {
 
 	public Whatsapp(DesktopWindow w) {
 		super(w);
-		this.commandFactory.wait("android/home.button", 10.0).apply();
+		this.commandBuilder.wait("android/home.button", 10.0).apply();
 	}
 	
 	

@@ -19,7 +19,7 @@ public class FindText extends SikuliCommand<Void, Void, Region> {
 
 	protected Region doApply() {
 		try {
-			return this.region.findText(text);
+			return this.regionToApplyCommand.findText(text);
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);

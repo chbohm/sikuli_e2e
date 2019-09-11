@@ -1,6 +1,7 @@
 package com.hexacta.sikuli.core.command;
 
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.Region;
 
 import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
@@ -9,21 +10,17 @@ public class Paste<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
 
 	private String text;
 
-	public Paste(DesktopWindow window, String text) {
-		this(window, null, text);
-	}
-
-	public Paste(DesktopWindow window, PFRML targetImage, String text) {
-		super(window, targetImage);
+	public Paste(DesktopWindow window, Region region, PFRML targetImage, String text) {
+		super(window, region, targetImage);
 		this.text = text;
 	}
 
 	protected Integer doApply() {
 		try {
-			if (targetImage != null) {
-				return this.region.paste(targetImage, text);
+			if (item != null) {
+				return this.regionToApplyCommand.paste(item, text);
 			} else {
-				return this.region.paste(text);
+				return this.regionToApplyCommand.paste(text);
 			}
 		} catch (FindFailed e) {
 			throw new RuntimeException(e);
@@ -31,7 +28,7 @@ public class Paste<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
 	}
 
 	public String toString() {
-		return String.format("Paste \"%s\" in %s", this.text, Utils.toString(this.region.getRect()));
+		return String.format("Paste \"%s\" in %s", this.text, Utils.toString(this.regionToApplyCommand.getRect()));
 	}
 
 }

@@ -13,7 +13,7 @@ public class ChromeApp extends SikuliRunner {
 	
 	protected ChromeApp(DesktopWindow window) {
 		super(window);
-		this.commandFactory.wait("chrome/chrome.back.button.png", 10.0).apply();
+		this.commandBuilder.wait("chrome/chrome.back.button.png", 10.0).apply();
 	}
 	
 	public static DesktopWindow init() {

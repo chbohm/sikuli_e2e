@@ -1,11 +1,9 @@
 package com.hexacta.test;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.hexacta.sikuli.core.Utils;
 import com.hexacta.sikuli.linkedin.LinkedInApp;
 
 /**

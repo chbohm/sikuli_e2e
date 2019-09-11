@@ -1,33 +1,36 @@
 package com.hexacta.sikuli.core.command;
 
 import org.sikuli.script.Match;
+import org.sikuli.script.Region;
 
+import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 
-public class Wait<PFRML> extends SikuliCommand<Void, Void, Match> {
-	private PFRML item;
+public class Wait<PFRML> extends SikuliCommand<PFRML, Void, Match> {
 	private Double secs;
 
-	public Wait(DesktopWindow window, PFRML item) {
-		this(window, null, null);
-	}
-
-	public Wait(DesktopWindow window, PFRML item, Double secs) {
-		super(window, null);
-		this.item = item;
+	public Wait(DesktopWindow window, Region region, PFRML item, Double secs) {
+		super(window, region, item);
 		this.secs = secs;
+		this.retries = 3;
+		
 	}
 
 	protected Match doApply() {
 		try {
 			if (secs == null) {
-				return this.region.wait(item);
+				return this.regionToApplyCommand.wait(this.item);
 			} else {
-				return this.region.wait(item, secs);
+				return this.regionToApplyCommand.wait(this.item, this.secs);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public String toString() {
+		return String.format("Wait(\"%s\") in %s", item.toString(), Utils.toString(regionToApplyCommand.getRect()));
+	}
+
 
 }

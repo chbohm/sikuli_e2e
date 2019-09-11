@@ -14,7 +14,7 @@ import org.sikuli.script.KeyModifier;
 import org.sikuli.script.Match;
 import org.sikuli.script.Region;
 
-import com.hexacta.sikuli.core.command.CommandFactory;
+import com.hexacta.sikuli.core.command.CommandBuilder;
 import com.hexacta.sikuli.core.command.Find;
 import com.hexacta.sikuli.core.command.SikuliCommand;
 import com.sun.jna.platform.DesktopWindow;
@@ -25,10 +25,10 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 public class SikuliRunner {
 
 	private Queue<SikuliCommand<?, ?, ?>> commands = new LinkedBlockingDeque<SikuliCommand<?, ?, ?>>();
-	protected CommandFactory commandFactory;
+	protected CommandBuilder commandBuilder;
 
 	protected SikuliRunner(DesktopWindow window) {
-		this.commandFactory = new CommandFactory(window);
+		this.commandBuilder = new CommandBuilder(window);
 		ImagePath.setBundlePath("./images");
 
 		// Settings.setShowActions(true);
@@ -37,30 +37,20 @@ public class SikuliRunner {
 		// Settings.Highlight = true;
 	}
 
-
-
-	private DesktopWindow getAppWindow(String exePath) {
-		App.focus(exePath);
-		HWND foregroundWindow = User32.INSTANCE.GetForegroundWindow();
-		List<DesktopWindow> appWindow = WindowUtils.getAllWindows(true).stream()
-				.filter(w -> w.getHWND().equals(foregroundWindow)).collect(Collectors.toList());
-		return appWindow.get(0);
-	}
-
 	public void closeChrome() {
 		// currentApp.close();
 	}
 
 	public int paste(String text) {
-		return commandFactory.paste(text).apply();
+		return commandBuilder.paste(text).apply();
 	}
 
 	public <PFRML> int paste(PFRML target, String text) {
-		return commandFactory.paste(target, text).apply();
+		return commandBuilder.paste(target, text).apply();
 	}
 
 	public <PFRML> Boolean exists(PFRML item) {
-		return commandFactory.exists(item).apply();
+		return commandBuilder.exists(item).apply();
 	}
 
 	public void gotoUrl(String url) {
@@ -74,32 +64,31 @@ public class SikuliRunner {
 	}
 
 	public int type(String text) {
-		return this.commandFactory.type(text).apply();
+		return this.commandBuilder.type(text).apply();
 	}
 
 	public int type(String text, int modifiers) {
-		return this.commandFactory.type(text, modifiers).apply();
-	}
-	
-	public int type(Region region, String text) {
-		return this.commandFactory.type(region, text, null).apply();
+		return this.commandBuilder.type(text, modifiers).apply();
 	}
 
+	public int type(Region region, String text) {
+		return this.commandBuilder.type(region, text, null).apply();
+	}
 
 	public int ctrl(String key) {
-		return this.commandFactory.ctrl(key).apply();
+		return this.commandBuilder.ctrl(key).apply();
 	}
 
 	public int ctrl(Region r, String key) {
-		return this.commandFactory.ctrl(r, key, KeyModifier.CTRL).apply();
+		return this.commandBuilder.ctrl(r, key, KeyModifier.CTRL).apply();
 	}
 
 	public int alt(String key) {
-		return this.commandFactory.alt(key).apply();
+		return this.commandBuilder.alt(key).apply();
 	}
 
 	public int alt(Region r, String key) {
-		return this.commandFactory.alt(r, key).apply();
+		return this.commandBuilder.alt(r, key).apply();
 	}
 
 //	public void resize() {
@@ -116,35 +105,42 @@ public class SikuliRunner {
 
 	public <PSI> Match find(PSI target) {
 		target = resolve(target);
-		return this.commandFactory.find(target).apply();
+		return this.commandBuilder.find(target).apply();
 	}
-	
+
 	public <PSI> Find<PSI> buildFind(PSI target) {
-		return this.commandFactory.find(target);
+		return this.commandBuilder.find(target);
 	}
 
 	public <PSI> Match find(Region region, PSI target) {
 		target = resolve(target);
-		return this.commandFactory.find(region, target).apply();
+		return this.commandBuilder.find(region, target).apply();
 	}
 
 	public Region findText(String text) {
-		return this.commandFactory.findText(text).apply();
+		return this.commandBuilder.findText(text).apply();
 	}
 
 	public Region findText(Region region, String text) {
-		return this.commandFactory.findText(region, text).apply();
+		return this.commandBuilder.findText(region, text).apply();
 	}
 
 	public <PSI> Match wait(PSI target, Double seconds) {
 		target = resolve(target);
-		return this.commandFactory.wait(target, seconds).apply();
+		return this.commandBuilder.wait(target, seconds).apply();
 	}
 
 	public <PFRML> int click(PFRML target) {
 		System.out.println("Clicking in " + target.toString());
 		target = resolve(target);
-		return this.commandFactory.click(target).apply();
+		return this.commandBuilder.click(target).apply();
+	}
+	
+	public <PFRML> int waitAndClick(PFRML target) {
+		System.out.println("Clicking in " + target.toString());
+		target = resolve(target);
+		this.commandBuilder.wait(target).apply();
+		return this.commandBuilder.click(target).apply();
 	}
 
 	public void waitMillis(int millisencods) {
@@ -153,7 +149,7 @@ public class SikuliRunner {
 
 	public <PFRML> Match wait(PFRML target) {
 		target = resolve(target);
-		return this.commandFactory.wait(target).apply();
+		return this.commandBuilder.wait(target).apply();
 	}
 
 	private <PFRML> PFRML resolve(PFRML target) {
@@ -165,16 +161,7 @@ public class SikuliRunner {
 	}
 
 	public Region getAppRegion() {
-		DesktopWindow w = this.commandFactory.getWindow();
-		return new Region(Utils.getWindowsRectangle(w.getHWND()));
-	}
-
-	public synchronized void processCommands() {
-		while (this.commands.peek() != null) {
-			SikuliCommand<?, ?, ?> command = this.commands.poll();
-			command.apply();
-		}
-
+		return this.commandBuilder.getAppRegion();
 	}
 
 }
