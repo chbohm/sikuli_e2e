@@ -57,7 +57,8 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 			return this.doApply();
 		} catch (RuntimeException e) {
 			if (e.getCause() instanceof FindFailed) {
-				errorHandler.writeError(this.id, this.screen, this.targetImage);
+				this.region.highlight(1, "red");
+				errorHandler.writeError(this.id, this.region, this.targetImage);
 			}
 			if (retries == 0) {
 				Debug.error("Failed! Giving up.");
@@ -73,15 +74,18 @@ public abstract class SikuliCommand<PFRML, ParamType, ReturnType> implements Fun
 		return apply();
 	}
 
+	public SikuliCommand<PFRML, ParamType, ReturnType> withRetries(int retries) {
+		this.retries = retries;
+		return this;
+	}
+
 	protected abstract ReturnType doApply();
 
 	private void moveMouseIntoRegion() {
-		Location loc = Mouse.at();
+		Location loc = this.region.getCenter();
 		loc.x = loc.x < 20 ? 20 : loc.x;
 		loc.y = loc.y < 20 ? 20 : loc.y;
 		User32.INSTANCE.SetCursorPos(loc.x, loc.y);
-		// Mouse.move(loc);
-		Utils.wait(100);
 	}
 
 }

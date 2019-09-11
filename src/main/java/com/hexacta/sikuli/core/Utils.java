@@ -76,7 +76,7 @@ public class Utils {
 		return new Rectangle(screen.getX(), screen.getY(), screen.getW(), screen.getH());
 	}
 
-	public static void wait(int millisencods) {
+	public static void waitMillis(long millisencods) {
 		try {
 			Thread.sleep(millisencods);
 		} catch (InterruptedException e) {
@@ -106,13 +106,13 @@ public class Utils {
 
 	public static void moveMouse(int x, int y) {
 		Mouse.move(new Location(x, y));
-		Utils.wait(100);
+		Utils.waitMillis(100);
 	}
 	
 	public static void moveMouse(Rectangle rectangle) {
 		Location loc = getMiddleLocation(rectangle);
 		Mouse.move(loc);
-		Utils.wait(100);
+		Utils.waitMillis(100);
 	}
 
 	public static Rectangle getWindowsRectangle(HWND hwnd) {
@@ -126,4 +126,13 @@ public class Utils {
 	public static String toString(Rectangle rectangle) {
 		return String.format("R[%s,%s,%s,%s]", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 	}
+	
+	public static String saveCapture(long id, Region region) {
+		return Utils.saveCapture(Long.toString(id), region);
+	}
+	
+	public static String saveCapture(String id, Region region) {
+		return region.saveScreenCapture(Utils.RESULT_FOLDER, id + "_region" + ".png");
+	}
+
 }

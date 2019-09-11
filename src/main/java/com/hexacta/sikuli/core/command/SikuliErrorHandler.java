@@ -30,7 +30,7 @@ public class SikuliErrorHandler<PFRML> {
 
 	public void writeError(long id, Region region, PFRML targetImage) {
 		String imageNotFoundPath = writeImageNotFound(id, targetImage);
-		String regionImagePath = saveCapture(id, region);
+		String regionImagePath = Utils.saveCapture(id, region);
 
 		String className = this.getClass().getSimpleName();
 		String fileName = id + "_" + className + ".html";
@@ -51,14 +51,11 @@ public class SikuliErrorHandler<PFRML> {
 		}
 
 		if (imageNotFound instanceof Region) {
-			return saveCapture(id, (Region) imageNotFound);
+//			return Utils.saveCapture(id, (Region) imageNotFound);
 		}
 		return "";
 	}
 
-	private String saveCapture(long id, Region region) {
-		return region.saveScreenCapture(Utils.RESULT_FOLDER, id + "_region" + ".png");
-	}
 
 	private String getContextHtml(String notFoundImageFileName, String regionImageFileName) {
 		return String.format(ERROR_DESCRIPTION_TEMPLATE, notFoundImageFileName, regionImageFileName,

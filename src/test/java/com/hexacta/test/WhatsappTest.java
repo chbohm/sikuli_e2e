@@ -1,4 +1,4 @@
-package com.hexacta.test.evaluations;
+package com.hexacta.test;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.hexacta.sikuli.evaluations.Whatsapp;
+import com.hexacta.sikuli.whatsapp.Whatsapp;
 
 /**
  * Unit test for simple App.
@@ -18,10 +18,8 @@ public class WhatsappTest {
 	@BeforeClass
 	public static void beforeAll() throws Exception {
 		try {
-			app = new Whatsapp();
-			app.initApp();
+			app = Whatsapp.create();
 		} catch (Exception e) {
-
 			e.printStackTrace();
 		}
 	}

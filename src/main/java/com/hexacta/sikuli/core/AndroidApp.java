@@ -1,48 +1,47 @@
-package com.hexacta.sikuli.evaluations;
+package com.hexacta.sikuli.core;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.sikuli.script.Location;
 import org.sikuli.script.Mouse;
 import org.sikuli.script.Region;
 
-import com.hexacta.sikuli.core.SikuliRunner;
-import com.hexacta.sikuli.core.Utils;
+import com.sun.jna.platform.DesktopWindow;
+import com.sun.jna.platform.WindowUtils;
 
 public class AndroidApp extends SikuliRunner {
 
-	private String appName;
-	private String appImage;
 
-	public AndroidApp(String appName, String appImage) {
-		this.appName = appName;
-		this.appImage = appImage;
+
+	protected AndroidApp(DesktopWindow window) {
+		super(window);
+	}
+	
+	public static DesktopWindow init() {
+		List<DesktopWindow> windows = WindowUtils.getAllWindows(true).stream()
+				.filter(w -> w.getFilePath().endsWith("ApowerMirror.exe")).collect(Collectors.toList());
+		DesktopWindow window = windows.get(3);
+		Utils.moveWindow(window, 0, 0);
+		Utils.showWindow(window);
+		Utils.moveMouse(Utils.getWindowsRectangle(window.getHWND()));
+		return window;
 	}
 
-	public void initApp() throws Exception {
-		initMobileMirror();
-
-		if (!exists(appImage)) {
-			startApp(appName, appImage);
-		}
-//		if (exists("advanced.configuration.button.png")) {
-//			click("advanced.configuration.button.png");
-//			click("access.to.unsecure.site.png");
-//		}
-	}
-
-	private void startApp(String appName, String iconFileName) {
+	public void goToApp(String appName, String iconFileName) {
 		gotToAllApplicationsView();
 		click("android/app.search.png");
-		Utils.wait(200);
+		waitMillis(200);
 		type(appName);
-		Utils.wait(600);
+		waitMillis(600);
 		click(iconFileName);
 	}
 
 	public void gotToAllApplicationsView() {
 		click("android/home.button.png");
-		Utils.wait(500);
+		waitMillis(500);
 		swipeUp(find("android/home.button.png").above(300), 200);
-		Utils.wait(500);
+		waitMillis(500);
 
 	}
 
@@ -86,10 +85,10 @@ public class AndroidApp extends SikuliRunner {
 	 */
 	public void swipe(int x, int y, int mouseButton, int xOffset, int yOffset) {
 		Utils.moveMouse(x, y);
-		Utils.wait(100);
+		waitMillis(100);
 		Mouse.down(mouseButton);
 		Mouse.move(xOffset, yOffset);
-		Utils.wait(100);
+		waitMillis(100);
 		Mouse.up();
 	}
 

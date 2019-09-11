@@ -15,6 +15,7 @@ import org.sikuli.script.Match;
 import org.sikuli.script.Region;
 
 import com.hexacta.sikuli.core.command.CommandFactory;
+import com.hexacta.sikuli.core.command.Find;
 import com.hexacta.sikuli.core.command.SikuliCommand;
 import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.WindowUtils;
@@ -24,10 +25,10 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 public class SikuliRunner {
 
 	private Queue<SikuliCommand<?, ?, ?>> commands = new LinkedBlockingDeque<SikuliCommand<?, ?, ?>>();
-	private CommandFactory commandFactory = new CommandFactory();
-	private DesktopWindow window;
+	protected CommandFactory commandFactory;
 
-	public SikuliRunner() {
+	protected SikuliRunner(DesktopWindow window) {
+		this.commandFactory = new CommandFactory(window);
 		ImagePath.setBundlePath("./images");
 
 		// Settings.setShowActions(true);
@@ -36,24 +37,7 @@ public class SikuliRunner {
 		// Settings.Highlight = true;
 	}
 
-	public void startChrome() {
-		// WindowUtils.getAllWindows(true).stream().filter(w ->)
-		this.window = getAppWindow("\"c:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"");
-		App.focus("\"c:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"");
-		commandFactory.init(this.window);
-		commandFactory.wait("chrome/chrome.back.button.png", 10.0).apply();
-	}
 
-	public void initMobileMirror() {
-		List<DesktopWindow> windows = WindowUtils.getAllWindows(true).stream()
-				.filter(w -> w.getFilePath().endsWith("ApowerMirror.exe")).collect(Collectors.toList());
-		this.window = windows.get(3);
-		Utils.moveWindow(window, 0, 0);
-		Utils.showWindow(window);
-		Utils.moveMouse(Utils.getWindowsRectangle(window.getHWND()));
-		commandFactory.init(window);
-		commandFactory.wait("android/home.button", 10.0).apply();
-	}
 
 	private DesktopWindow getAppWindow(String exePath) {
 		App.focus(exePath);
@@ -83,6 +67,10 @@ public class SikuliRunner {
 		ctrl("l");
 		paste(url);
 		type(Key.ENTER);
+		if (exists("chrome/advanced.configuration.button.png")) {
+			click("chrome/advanced.configuration.button.png");
+			click("chrome/access.to.unsecure.site.png");
+		}
 	}
 
 	public int type(String text) {
@@ -92,6 +80,11 @@ public class SikuliRunner {
 	public int type(String text, int modifiers) {
 		return this.commandFactory.type(text, modifiers).apply();
 	}
+	
+	public int type(Region region, String text) {
+		return this.commandFactory.type(region, text, null).apply();
+	}
+
 
 	public int ctrl(String key) {
 		return this.commandFactory.ctrl(key).apply();
@@ -126,6 +119,10 @@ public class SikuliRunner {
 		return this.commandFactory.find(target).apply();
 	}
 	
+	public <PSI> Find<PSI> buildFind(PSI target) {
+		return this.commandFactory.find(target);
+	}
+
 	public <PSI> Match find(Region region, PSI target) {
 		target = resolve(target);
 		return this.commandFactory.find(region, target).apply();
@@ -134,18 +131,15 @@ public class SikuliRunner {
 	public Region findText(String text) {
 		return this.commandFactory.findText(text).apply();
 	}
-	
+
 	public Region findText(Region region, String text) {
 		return this.commandFactory.findText(region, text).apply();
 	}
 
-
-	
 	public <PSI> Match wait(PSI target, Double seconds) {
 		target = resolve(target);
 		return this.commandFactory.wait(target, seconds).apply();
 	}
-
 
 	public <PFRML> int click(PFRML target) {
 		System.out.println("Clicking in " + target.toString());
@@ -153,8 +147,8 @@ public class SikuliRunner {
 		return this.commandFactory.click(target).apply();
 	}
 
-	public <PFRML> Match wait(double nanos) {
-		return this.commandFactory.wait(null, nanos).apply();
+	public void waitMillis(int millisencods) {
+		Utils.waitMillis(millisencods);
 	}
 
 	public <PFRML> Match wait(PFRML target) {
@@ -171,7 +165,8 @@ public class SikuliRunner {
 	}
 
 	public Region getAppRegion() {
-		return new Region(Utils.getWindowsRectangle(this.window.getHWND()));
+		DesktopWindow w = this.commandFactory.getWindow();
+		return new Region(Utils.getWindowsRectangle(w.getHWND()));
 	}
 
 	public synchronized void processCommands() {

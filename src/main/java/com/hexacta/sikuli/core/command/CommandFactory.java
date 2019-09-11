@@ -8,10 +8,10 @@ public class CommandFactory {
 
 	private DesktopWindow window;
 
-	public void init(DesktopWindow window) {
+	public CommandFactory(DesktopWindow window) {
 		this.window = window;
 	}
-
+	
 	public <PFRML> Alt<PFRML> alt(String t) {
 		return new Alt<PFRML>(this.window, null, t);
 	}
@@ -39,6 +39,11 @@ public class CommandFactory {
 	public <PFRML> Type<PFRML> type(PFRML targetImage, String t, Integer keyModifier) {
 		return new Type<PFRML>(this.window, targetImage, t, keyModifier);
 	}
+	
+	public <PFRML> Type<PFRML> type(Region region, String t, Integer keyModifier) {
+		return new Type<PFRML>(this.window, null, t, keyModifier);
+	}
+
 
 	public <PFRML> Paste<PFRML> paste(String t) {
 		return new Paste<PFRML>(this.window, t);
@@ -81,6 +86,10 @@ public class CommandFactory {
 
 	public <PFRML> Wait<PFRML> wait(PFRML target) {
 		return new Wait<PFRML>(this.window, target, null);
+	}
+
+	public DesktopWindow getWindow() {
+		return this.window;
 	}
 
 }

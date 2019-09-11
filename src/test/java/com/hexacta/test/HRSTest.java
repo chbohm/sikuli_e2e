@@ -1,4 +1,4 @@
-package com.hexacta.test.evaluations;
+package com.hexacta.test;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -6,20 +6,19 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.hexacta.sikuli.core.Utils;
-import com.hexacta.sikuli.evaluations.EvaluationsApp;
+import com.hexacta.sikuli.hrs.HRSApp;
 
 /**
  * Unit test for simple App.
  */
 public class HRSTest {
-	private static EvaluationsApp app;
+	private static HRSApp app;
 
 	@BeforeClass
 	public static void beforeAll() throws Exception {
 		try {
-			app = new EvaluationsApp();
-			app.startApplication();
-			Utils.wait(500);
+			app = HRSApp.create();
+			app.startApplication("https://hrsuat.hexacta.com/hrs-intranet/login.do");
 			app.logIn("cbohm", "christian00");
 		} catch (Exception e) {
 

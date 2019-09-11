@@ -1,25 +1,25 @@
-package com.hexacta.sikuli.evaluations;
+package com.hexacta.sikuli.hrs;
 
 import org.sikuli.basics.Debug;
 import org.sikuli.script.Region;
 
-import com.hexacta.sikuli.core.SikuliRunner;
+import com.hexacta.sikuli.core.ChromeApp;
+import com.sun.jna.platform.DesktopWindow;
 
-public class EvaluationsApp extends SikuliRunner {
+public class HRSApp extends ChromeApp {
 
-	public void startApplication() throws Exception {
-		startChrome();
-		gotoUrl("https://hrsuat.hexacta.com/hrs-intranet/login.do");
-
-		if (exists("chrome/advanced.configuration.button.png")) {
-			click("chrome/advanced.configuration.button.png");
-			click("chrome/access.to.unsecure.site.png");
-		}
+	protected HRSApp(DesktopWindow window) {
+		super(window);
 	}
 
-	public void closeApplication() throws Exception {
-		closeChrome();
+	public static HRSApp create() {
+		DesktopWindow w = ChromeApp.init();
+		HRSApp app = new HRSApp(w);
+		app.gotoUrl("https://hrsuat.hexacta.com/hrs-intranet/login.do");
+		return app;
 	}
+
+	
 
 	public void logIn(String user, String pass) throws Exception {
 
@@ -31,7 +31,7 @@ public class EvaluationsApp extends SikuliRunner {
 		paste(userNameTxt, user);
 		paste(passTxt, pass);
 		click("hrs/signIn.button.png");
-		//this.region.saveScreenCapture("./results/region.png");
+		// this.region.saveScreenCapture("./results/region.png");
 	}
 
 	public void gotToManageEmployees() {
@@ -43,12 +43,10 @@ public class EvaluationsApp extends SikuliRunner {
 
 	}
 
-	public Region getTextFieldRegion(String imageName)  {
+	public Region getTextFieldRegion(String imageName) {
 		Region lbl = find(imageName);
 		return lbl.right(300).offset(20, 0);
 
 	}
-	
-
 
 }

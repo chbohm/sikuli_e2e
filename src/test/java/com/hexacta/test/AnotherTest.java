@@ -1,15 +1,15 @@
-package com.hexacta.test.evaluations;
+package com.hexacta.test;
 
 import org.junit.Test;
 
-import com.hexacta.sikuli.evaluations.EvaluationsApp;
+import com.hexacta.sikuli.hrs.HRSApp;
 
 /**
  * Unit test for simple App.
  */
 
 public class AnotherTest {
-	private static EvaluationsApp app;
+	private static HRSApp app;
 
 	@Test
 	public void findUser_Successful() {
