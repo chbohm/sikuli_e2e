@@ -14,10 +14,12 @@ import org.sikuli.script.Location;
 import org.sikuli.script.Mouse;
 import org.sikuli.script.Region;
 
+import com.sun.jna.Pointer;
 import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.RECT;
+import com.sun.jna.platform.win32.WinUser.WNDENUMPROC;
 
 public class Utils {
 
@@ -36,6 +38,10 @@ public class Utils {
 	}
 
 	private Utils() {
+	}
+	
+	public static String getTimestampStr() {
+		return sdf.format(new Date());
 	}
 
 	public static String getPath(String filePath) {
@@ -56,14 +62,13 @@ public class Utils {
 	public static Rectangle toRectangle(Region region) {
 		return toRectangle(region.getScreen());
 	}
-	
+
 	public static Location getMiddleLocation(Rectangle rec) {
 		int middleWidth = (int) rec.width / 2;
 		int middleHeight = (int) rec.height / 2;
 		Location l = new Location(rec.x + middleWidth, rec.y + middleHeight);
 		return l;
 	}
-
 
 	public static Location getMiddleLocation(Region region) {
 		int middleWidth = (int) region.w / 2;
@@ -108,7 +113,7 @@ public class Utils {
 		Mouse.move(new Location(x, y));
 		Utils.waitMillis(100);
 	}
-	
+
 	public static void moveMouse(Rectangle rectangle) {
 		Location loc = getMiddleLocation(rectangle);
 		Mouse.move(loc);
@@ -122,15 +127,15 @@ public class Utils {
 		int height = rect.bottom - rect.top;
 		return new Rectangle(rect.top, rect.left, width, height);
 	}
-	
+
 	public static String toString(Rectangle rectangle) {
 		return String.format("R[%s,%s,%s,%s]", rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 	}
-	
+
 	public static String saveCapture(long id, Region region) {
 		return Utils.saveCapture(Long.toString(id), region);
 	}
-	
+
 	public static String saveCapture(String id, Region region) {
 		return region.saveScreenCapture(Utils.RESULT_FOLDER, id + "_region" + ".png");
 	}

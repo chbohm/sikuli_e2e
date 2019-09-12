@@ -2,11 +2,14 @@ package com.hexacta.sikuli.linkedin;
 
 import java.io.File;
 
+import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
 import org.sikuli.script.Mouse;
+import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
 
 import com.hexacta.sikuli.core.ChromeApp;
+import com.hexacta.sikuli.core.Utils;
 import com.sun.jna.platform.DesktopWindow;
 
 public class LinkedInApp extends ChromeApp {
@@ -65,36 +68,50 @@ public class LinkedInApp extends ChromeApp {
 		configureSearchOptions();
 		click("linkedin/buscar.aplicar.button.png");
 		wait("linkedin/search.result.title.png");
-		exportResults("./");
 	}
 
-	private void exportResults(String folder) {
+	private void exportResults(String folderStr) {
+		File folder = new File(folderStr);
+		if (!folder.exists())  {
+			folder.mkdirs();
+		}
 		int i = 1;
 		saveAllLinks(new File(folder, "page_" + i + ".csv"));
+		waitMillis(1000);
+		Mouse.wheel(Mouse.WHEEL_DOWN, 100);
 		while (hasMorePages()) {
 			click("linkedin/pager.next.enabled.png");
 			wait("linkedin/search.result.title.png");
 			i++;
 			saveAllLinks(new File(folder, "page_" + i + ".csv"));
+			waitMillis(1000);
+			Mouse.wheel(Mouse.WHEEL_DOWN, 100);
 		}
 
 	}
 
 	private boolean hasMorePages() {
-		return scrollAndFind("linkedin/pager.next.enabled.png") != null;
+		Region match = find(new Pattern("linkedin/pager.next.enabled.png").similar(1f));
+		System.out.println(match);
+		return match != null;
 	}
 
 	public void saveAllLinks(File fileName) {
 		click("linkedin/link.klipper.button.png");
 		click("linkedin/link.klipper.extractAllLinks.png");
-		wait("linkedin/saveAs.fileName.label.png");
-		Region region = find("linkedin/saveAs.fileName.label.png").right(90);
-		click(region);
-		ctrl(region, "a");
-		type(region, Key.BACKSPACE);
-		type(fileName.getAbsolutePath());
-		type(Key.ENTER);
-
+		Region region = getAppRegion();
+		try {
+			region.wait(resolve("linkedin/saveAs.fileName.label.png"), 5.0);
+			Region fileNameField = region.find("linkedin/saveAs.fileName.label.png").right(90);
+			region.click(fileNameField);
+			fileNameField.keyDown(Key.CTRL);
+			fileNameField.keyDown("a");
+			fileNameField.keyUp();
+			fileNameField.paste(fileName.getAbsolutePath());
+			region.type(resolve("linkedin/save.button.png"), Key.ENTER);
+		} catch (FindFailed e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void configureSearchOptions() {
@@ -126,7 +143,7 @@ public class LinkedInApp extends ChromeApp {
 		click(r);
 	}
 
-	public void configureTextField(String titleFieldImage, String criteria) {
+	public <PSI> void configureTextField(PSI titleFieldImage, String criteria) {
 		Region textFieldUnderTitleRegion = scrollAndFind(titleFieldImage).below(40);
 		textFieldUnderTitleRegion.highlight();
 		click(textFieldUnderTitleRegion);
@@ -134,12 +151,13 @@ public class LinkedInApp extends ChromeApp {
 		type(textFieldUnderTitleRegion, Key.BACKSPACE);
 		paste(textFieldUnderTitleRegion, criteria);
 	}
+	
 
-	public Region scrollAndFind(String image) {
+
+	public <PSI> Region scrollAndFind(PSI image) {
 		int maxScrollingAttemps = 20;
 		int scrollAttemp = 1;
 		Region result = find(image);
-		;
 		while (result == null && scrollAttemp < maxScrollingAttemps) {
 			Mouse.wheel(Mouse.WHEEL_DOWN, 10);
 			result = find(image);
@@ -148,7 +166,7 @@ public class LinkedInApp extends ChromeApp {
 		return result;
 	}
 
-	public Region getFieldBelow(String image) {
+	public <PSI> Region getFieldBelow(PSI image) {
 		Region item = scrollAndFind(image);
 		if (item == null) {
 			throw new RuntimeException("Could not find " + image);
@@ -159,7 +177,8 @@ public class LinkedInApp extends ChromeApp {
 	public static void main(String[] args) {
 		LinkedInApp app = LinkedInApp.create();
 		app.gotoSearchPeople();
-		app.search();
+		 app.search();
+		 app.exportResults("./searchResults/"+Utils.getTimestampStr());
 	}
 
 }

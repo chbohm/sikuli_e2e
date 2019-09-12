@@ -152,7 +152,7 @@ public class SikuliRunner {
 		return this.commandBuilder.wait(target).apply();
 	}
 
-	private <PFRML> PFRML resolve(PFRML target) {
+	public <PFRML> PFRML resolve(PFRML target) {
 		if (target instanceof String) {
 			File file = new File("./images/" + (String) target);
 			return (PFRML) file.getAbsolutePath();
