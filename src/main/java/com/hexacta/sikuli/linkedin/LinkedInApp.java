@@ -1,6 +1,9 @@
 package com.hexacta.sikuli.linkedin;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
 
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
@@ -64,15 +67,15 @@ public class LinkedInApp extends ChromeApp {
 		wait("linkedin/buscar.aplicar.button.png", 5.0);
 	}
 
-	public void search() {
-		configureSearchOptions();
+	public void search(SearchOptions options) {
+		configureSearchOptions(options);
 		click("linkedin/buscar.aplicar.button.png");
 		wait("linkedin/search.result.title.png");
 	}
 
-	private void exportResults(String folderStr) {
+	private void exportResults(String folderStr) throws IOException {
 		File folder = new File(folderStr);
-		if (!folder.exists())  {
+		if (!folder.exists()) {
 			folder.mkdirs();
 		}
 		int i = 1;
@@ -87,6 +90,7 @@ public class LinkedInApp extends ChromeApp {
 			waitMillis(1000);
 			Mouse.wheel(Mouse.WHEEL_DOWN, 100);
 		}
+		ResultsProcessor.processResultsFolder(folder);
 
 	}
 
@@ -114,13 +118,28 @@ public class LinkedInApp extends ChromeApp {
 		}
 	}
 
-	public void configureSearchOptions() {
-		click(getCheckboxAtTheLeft("linkedin/buscar.contactos.1er.png"));
-		waitMillis(200);
-		click(getCheckboxAtTheLeft("linkedin/buscar.contactos.2do.png"));
-		waitMillis(200);
-		configureDropDownTextField("linkedin/buscar.ubicaciones.title.png", "Gran Buenos Aires, Argentina");
-		configureTextField("linkedin/buscar.cargo.title.png", ".Net");
+	public void configureSearchOptions(SearchOptions options) {
+		if (options.firstLevel) {
+			click(getCheckboxAtTheLeft("linkedin/buscar.contactos.1er.png"));
+			waitMillis(200);
+		}
+
+		if (options.secondLevel) {
+			click(getCheckboxAtTheLeft("linkedin/buscar.contactos.2do.png"));
+			waitMillis(200);
+		}
+
+		if (options.thirdLevel) {
+			waitMillis(200);
+		}
+
+		for (String location : options.locations) {
+			configureDropDownTextField("linkedin/buscar.ubicaciones.title.png", location);
+		}
+
+		if (!options.role.isEmpty()) {
+			configureTextField("linkedin/buscar.cargo.title.png", options.role);
+		}
 	}
 
 	public Region getCheckboxAtTheLeft(String image) {
@@ -151,8 +170,6 @@ public class LinkedInApp extends ChromeApp {
 		type(textFieldUnderTitleRegion, Key.BACKSPACE);
 		paste(textFieldUnderTitleRegion, criteria);
 	}
-	
-
 
 	public <PSI> Region scrollAndFind(PSI image) {
 		int maxScrollingAttemps = 20;
@@ -174,11 +191,50 @@ public class LinkedInApp extends ChromeApp {
 		return item.below(40);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		SearchOptions options = getSearchOptions();
+		System.out.println("Configuration used");
+		System.out.println(options);
+		
+		File resultsFolder = new File("./searchResults/" + Utils.getTimestampStr());
+		resultsFolder.mkdirs();
+		System.out.println("Results will be written in "+resultsFolder.getAbsolutePath());
+		
 		LinkedInApp app = LinkedInApp.create();
 		app.gotoSearchPeople();
-		 app.search();
-		 app.exportResults("./searchResults/"+Utils.getTimestampStr());
+		app.search(options);
+		
+		app.exportResults(resultsFolder.getAbsolutePath());
+		
+		System.out.println("Done!");
+		
+	}
+	
+	private static SearchOptions getSearchOptions() throws IOException {
+		SearchOptions options = null;
+		File file = new File("./searchoptions.json");
+		if (file.exists()) {
+			System.out.println("Using configuration options from ./searchoptions.json");
+			options = SearchOptions.fromJson(readFile(file));
+		} else {
+			
+			System.out.println("Using configuration options from -D properties");
+			options = SearchOptions.createFromEnv();
+		}
+		return options;
+	}
+
+	private static String readFile(File file) throws IOException {
+		StringBuilder b = new StringBuilder();
+		try (LineNumberReader reader = new LineNumberReader(new FileReader(file))) {
+			String line = reader.readLine();
+			while (line != null) {
+				b.append(line + "\n");
+				reader.readLine();
+			}
+			return b.toString();
+		}
+
 	}
 
 }

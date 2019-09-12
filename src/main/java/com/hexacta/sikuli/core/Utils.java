@@ -2,7 +2,9 @@ package com.hexacta.sikuli.core;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.LineNumberReader;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -14,21 +16,20 @@ import org.sikuli.script.Location;
 import org.sikuli.script.Mouse;
 import org.sikuli.script.Region;
 
-import com.sun.jna.Pointer;
+import com.google.gson.Gson;
 import com.sun.jna.platform.DesktopWindow;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.RECT;
-import com.sun.jna.platform.win32.WinUser.WNDENUMPROC;
 
 public class Utils {
-
+	private static final Gson gson = new Gson();
 	public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
 	public static final String RESULT_FOLDER;
 
 	static {
 		File file = new File("./results", sdf.format(new Date()));
-		file.mkdir();
+		file.mkdirs();
 		if (!file.exists()) {
 			throw new IllegalStateException("Cound not create directory: " + file.getAbsolutePath());
 		}
@@ -39,7 +40,7 @@ public class Utils {
 
 	private Utils() {
 	}
-	
+
 	public static String getTimestampStr() {
 		return sdf.format(new Date());
 	}
@@ -138,6 +139,27 @@ public class Utils {
 
 	public static String saveCapture(String id, Region region) {
 		return region.saveScreenCapture(Utils.RESULT_FOLDER, id + "_region" + ".png");
+	}
+
+	public static <T> T fromJson(String json, Class<T> aClass) {
+		return gson.fromJson(json, aClass);
+	}
+
+	public static <T> String toJson(T obj) {
+		return gson.toJson(obj);
+	}
+	
+	
+	public static void readFile(File file, LineReadCallback callback) throws IOException {
+
+		try (LineNumberReader reader = new LineNumberReader(new FileReader(file))) {
+			String line = reader.readLine();
+			while (line != null) {
+				callback.line(line);
+				line = reader.readLine();
+			}
+		}
+
 	}
 
 }
