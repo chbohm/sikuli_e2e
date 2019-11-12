@@ -1,0 +1,33 @@
+{
+  "searchOptionsList":
+           [
+             {
+              "name": "Busqueda .Net cerca de oficinas",
+              "firstLevel": "true", 
+              "secondLevel":"true",
+              "thirdLevel":"false",
+              "role":".Net",
+              "locations": [
+                            "Gran Buenos Aires, Argentina",
+                            "Provincia de Córdoba, Argentina",
+                            "Provincia de Entre Ríos, Argentina",
+                            "Uruguay",
+                            "Bogotá D.C., Colombia"
+                           ]
+              },
+              {
+               "name": "Busqueda React cerca de oficinas",
+               "firstLevel":"true", 
+               "secondLevel":"true",
+               "thirdLevel":"false",
+               "role":"React",
+               "locations": [
+                             "Gran Buenos Aires, Argentina",
+                             "Provincia de Córdoba, Argentina",
+                             "Provincia de Entre Ríos, Argentina",
+                             "Uruguay",
+                             "Bogotá D.C., Colombia"
+                           ]
+              }
+           ]
+}

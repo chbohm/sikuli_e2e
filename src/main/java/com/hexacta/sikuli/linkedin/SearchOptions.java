@@ -8,6 +8,8 @@ import com.hexacta.sikuli.core.Utils;
 
 public class SearchOptions {
 
+	public String name = "";
+	public String description = "";
 	public boolean firstLevel = true;
 	public boolean secondLevel = false;
 	public boolean thirdLevel = false;

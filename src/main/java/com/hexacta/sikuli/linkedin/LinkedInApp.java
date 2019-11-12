@@ -1,9 +1,11 @@
 package com.hexacta.sikuli.linkedin;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.util.Properties;
 
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Key;
@@ -17,8 +19,26 @@ import com.sun.jna.platform.DesktopWindow;
 
 public class LinkedInApp extends ChromeApp {
 
+	float pagerNextEnabledSimilarity = 0.98f;
+
 	protected LinkedInApp(DesktopWindow w) {
 		super(w);
+		initFromProperties();
+	}
+
+	private void initFromProperties() {
+		Properties p = new Properties();
+		try {
+			p.load(LinkedInApp.class.getClassLoader()
+					.getResourceAsStream("config.properties"));
+			String similarityStr = (String) p.getOrDefault("pager.next.enabled.similarity", "0.98");
+			pagerNextEnabledSimilarity = Double.valueOf(similarityStr).floatValue();
+		} catch (IOException e) {
+			throw new IllegalStateException(
+					"The file /com/hexacta/sikuli/linkedin/config.properties was not found inside the package");
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static LinkedInApp create2() {
@@ -95,7 +115,7 @@ public class LinkedInApp extends ChromeApp {
 	}
 
 	private boolean hasMorePages() {
-		Region match = find(new Pattern("linkedin/pager.next.enabled.png").similar(1f));
+		Region match = find(new Pattern("linkedin/pager.next.enabled.png").similar(this.pagerNextEnabledSimilarity));
 		System.out.println(match);
 		return match != null;
 	}
@@ -191,49 +211,47 @@ public class LinkedInApp extends ChromeApp {
 		return item.below(40);
 	}
 
-	public static void main(String[] args) throws IOException {
-		SearchOptions options = getSearchOptions();
-		System.out.println("Configuration used");
-		System.out.println(options);
-		
-		File resultsFolder = new File("./searchResults/" + Utils.getTimestampStr());
-		resultsFolder.mkdirs();
-		System.out.println("Results will be written in "+resultsFolder.getAbsolutePath());
-		
-		LinkedInApp app = LinkedInApp.create();
-		app.gotoSearchPeople();
-		app.search(options);
-		
-		app.exportResults(resultsFolder.getAbsolutePath());
-		
-		System.out.println("Done!");
-		
-	}
-	
-	private static SearchOptions getSearchOptions() throws IOException {
-		SearchOptions options = null;
-		File file = new File("./searchoptions.json");
+	private static SearchOptionsList getSearchOptionsList() throws IOException {
+		SearchOptionsList options = null;
+		File file = new File("./searchOptionsList.json");
 		if (file.exists()) {
 			System.out.println("Using configuration options from ./searchoptions.json");
-			options = SearchOptions.fromJson(readFile(file));
+			options = SearchOptionsList.fromJson(readFile(file));
 		} else {
-			
 			System.out.println("Using configuration options from -D properties");
-			options = SearchOptions.createFromEnv();
+			throw new IllegalArgumentException(String.format("The file %s does not exist", file.getAbsolutePath()));
 		}
 		return options;
 	}
 
 	private static String readFile(File file) throws IOException {
 		StringBuilder b = new StringBuilder();
-		try (LineNumberReader reader = new LineNumberReader(new FileReader(file))) {
+		try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), "UTF8"))) {
 			String line = reader.readLine();
 			while (line != null) {
 				b.append(line + "\n");
-				reader.readLine();
+				line = reader.readLine();
 			}
 			return b.toString();
 		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		SearchOptionsList searchOptionsList = getSearchOptionsList();
+		File resultsFolder = new File("./searchResults/" + Utils.getTimestampStr());
+		resultsFolder.mkdirs();
+		System.out.println("Results will be written in " + resultsFolder.getAbsolutePath());
+
+		LinkedInApp app = LinkedInApp.create();
+		for (SearchOptions searchOptions : searchOptionsList.searchOptionsList) {
+			System.out.println("Starting to search options: " + searchOptions.toString());
+			File specificSearchFolder = new File(resultsFolder, searchOptions.name);
+			specificSearchFolder.mkdirs();
+			app.gotoSearchPeople();
+			app.search(searchOptions);
+			app.exportResults(specificSearchFolder.getAbsolutePath());
+		}
+		System.out.println("Done!");
 
 	}
 

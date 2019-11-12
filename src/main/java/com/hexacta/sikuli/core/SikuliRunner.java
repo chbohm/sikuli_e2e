@@ -155,6 +155,10 @@ public class SikuliRunner {
 	public <PFRML> PFRML resolve(PFRML target) {
 		if (target instanceof String) {
 			File file = new File("./images/" + (String) target);
+			if (!file.exists()) {
+				throw new RuntimeException(file.getAbsolutePath()+" does not exist");
+			}
+				
 			return (PFRML) file.getAbsolutePath();
 		}
 		return target;
