@@ -1,0 +1,15 @@
+{
+  "searchOptionsList":
+           [
+             {
+              "name": "Busqueda .Net cerca de oficinas",
+              "firstLevel": "true", 
+              "secondLevel":"true",
+              "thirdLevel":"false",
+              "role":".Net",
+              "locations": [
+                            "Gran Buenos Aires, Argentina"
+                           ]
+              }
+           ]
+}

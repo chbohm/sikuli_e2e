@@ -11,10 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
-import org.sikuli.script.IScreen;
 import org.sikuli.script.Location;
 import org.sikuli.script.Mouse;
 import org.sikuli.script.Region;
+import org.sikuli.script.support.IScreen;
 
 import com.google.gson.Gson;
 import com.sun.jna.platform.DesktopWindow;
