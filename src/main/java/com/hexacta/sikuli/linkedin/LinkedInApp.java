@@ -99,15 +99,19 @@ public class LinkedInApp extends ChromeApp {
 			folder.mkdirs();
 		}
 		int i = 1;
-		saveAllLinks(new File(folder, "page_" + i + ".csv"));
+		File fileCsv = new File(folder, "page_" + i + ".csv");
+		saveAllLinks(fileCsv);
 		waitMillis(1000);
+		ResultsProcessor.processFile(fileCsv);
 		Mouse.wheel(Mouse.WHEEL_DOWN, 100);
 		while (hasMorePages()) {
 			click("linkedin/pager.next.enabled.png");
 			wait("linkedin/search.result.title.png");
 			i++;
-			saveAllLinks(new File(folder, "page_" + i + ".csv"));
+			fileCsv = new File(folder, "page_" + i + ".csv");
+			saveAllLinks(fileCsv);
 			waitMillis(1000);
+			ResultsProcessor.processFile(fileCsv);
 			Mouse.wheel(Mouse.WHEEL_DOWN, 100);
 		}
 		ResultsProcessor.processResultsFolder(folder);
