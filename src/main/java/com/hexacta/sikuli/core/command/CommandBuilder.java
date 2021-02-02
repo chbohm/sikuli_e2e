@@ -80,6 +80,10 @@ public class CommandBuilder {
 	public <PFRML> Find<PFRML> find(PFRML item) {
 		return new Find<PFRML>(this.window, this.region, item);
 	}
+	
+	public <PFRML> Hover<PFRML> hover(PFRML item) {
+		return new Hover<PFRML>(this.window, this.region, item);
+	}
 
 
 	public <PFRML> Find<PFRML> find(Region region, PFRML item) {
@@ -95,13 +99,19 @@ public class CommandBuilder {
 	}
 
 
-	public <PFRML> Wait<PFRML> wait(PFRML target, Double nanos) {
-		return new Wait<PFRML>(this.window, this.region, target, nanos);
+	public <PFRML> Wait<PFRML> wait(PFRML target, Double secs) {
+		return new Wait<PFRML>(this.window, this.region, target, secs);
+	}
+	
+	public <PFRML> WheelUntilMatch<PFRML> wheelUntilMatch(PFRML target, int mouseDirection) {
+		return new WheelUntilMatch<PFRML>(this.window, this.region, target, mouseDirection);
 	}
 
 	public <PFRML> Wait<PFRML> wait(PFRML target) {
 		return new Wait<PFRML>(this.window, this.region, target, null);
 	}
+	
+
 
 	public DesktopWindow getWindow() {
 		return this.window;
@@ -110,5 +120,7 @@ public class CommandBuilder {
 	public Region getAppRegion() {
 		return new Region(this.appRegion);
 	}
+
+
 
 }

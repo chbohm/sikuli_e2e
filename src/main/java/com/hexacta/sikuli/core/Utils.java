@@ -2,8 +2,10 @@ package com.hexacta.sikuli.core;
 
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -161,5 +163,18 @@ public class Utils {
 		}
 
 	}
+	
+	public static String readFile(File file) throws IOException {
+		StringBuilder b = new StringBuilder();
+		try (LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), "UTF8"))) {
+			String line = reader.readLine();
+			while (line != null) {
+				b.append(line + "\n");
+				line = reader.readLine();
+			}
+			return b.toString();
+		}
+	}
+
 
 }

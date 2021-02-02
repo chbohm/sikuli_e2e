@@ -12,6 +12,7 @@ import org.sikuli.script.ImagePath;
 import org.sikuli.script.Key;
 import org.sikuli.script.KeyModifier;
 import org.sikuli.script.Match;
+import org.sikuli.script.Mouse;
 import org.sikuli.script.Region;
 
 import com.hexacta.sikuli.core.command.CommandBuilder;
@@ -34,7 +35,8 @@ public class SikuliRunner {
 		// Settings.setShowActions(true);
 		Settings.OcrTextRead = true;
 		Settings.OcrTextRead = true;
-		// Settings.Highlight = true;
+		Settings.DefaultHighlightTime = 0.2f;
+		Settings.Highlight = true;
 	}
 
 	public void closeChrome() {
@@ -135,11 +137,17 @@ public class SikuliRunner {
 		target = resolve(target);
 		return this.commandBuilder.click(target).apply();
 	}
-	
-	public <PFRML> int waitAndClick(PFRML target) {
+
+	public <PFRML> void hover(PFRML target) {
+		System.out.println("Hovering in " + target.toString());
+		target = resolve(target);
+		this.commandBuilder.hover(target).apply();
+	}
+
+	public <PFRML> int waitAndClick(PFRML target, Double secs) {
 		System.out.println("Clicking in " + target.toString());
 		target = resolve(target);
-		this.commandBuilder.wait(target).apply();
+		this.commandBuilder.wait(target, secs).apply();
 		return this.commandBuilder.click(target).apply();
 	}
 
@@ -152,13 +160,24 @@ public class SikuliRunner {
 		return this.commandBuilder.wait(target).apply();
 	}
 
+	/**
+	 * 
+	 * @param <PFRML>
+	 * @param mouseDirection Mouse.WHEEL_DOWN
+	 * @return
+	 */
+	public <PFRML> Match wheelUntilMatch(int mouseDirection, PFRML target) {
+		target = resolve(target);
+		return this.commandBuilder.wheelUntilMatch(target, mouseDirection).apply();
+	}
+
 	public <PFRML> PFRML resolve(PFRML target) {
 		if (target instanceof String) {
 			File file = new File("./images/" + (String) target);
 			if (!file.exists()) {
-				throw new RuntimeException(file.getAbsolutePath()+" does not exist");
+				throw new RuntimeException(file.getAbsolutePath() + " does not exist");
 			}
-				
+
 			return (PFRML) file.getAbsolutePath();
 		}
 		return target;

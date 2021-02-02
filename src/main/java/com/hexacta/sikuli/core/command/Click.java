@@ -17,6 +17,7 @@ public class Click<PFRML> extends SikuliCommand<PFRML, Void, Integer> {
 				return this.regionToApplyCommand.click();
 
 			} else {
+				this.regionToApplyCommand.find(item).highlight(0.3);
 				return this.regionToApplyCommand.click(item);
 			}
 		} catch (FindFailed e) {

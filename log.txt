@@ -1,0 +1,52 @@
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building evaluations 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ sikulibot ---
+[INFO] com.hexacta.test:sikulibot:jar:0.0.1-SNAPSHOT
+[INFO] +- com.sikulix:sikulixapi:jar:1.1.4-SNAPSHOT:compile
+[INFO] |  +- com.sikulix:sikulix2tigervnc:jar:1.1.4:compile
+[INFO] |  +- commons-cli:commons-cli:jar:1.4:compile
+[INFO] |  +- org.apache.commons:commons-exec:jar:1.3:compile
+[INFO] |  +- net.java.dev.jna:jna-platform:jar:5.4.0:compile
+[INFO] |  |  \- net.java.dev.jna:jna:jar:5.4.0:compile
+[INFO] |  +- org.reflections:reflections:jar:0.9.11:compile
+[INFO] |  |  +- com.google.guava:guava:jar:20.0:compile
+[INFO] |  |  \- org.javassist:javassist:jar:3.21.0-GA:compile
+[INFO] |  +- net.sourceforge.tess4j:tess4j:jar:4.4.1:compile
+[INFO] |  |  +- com.github.jai-imageio:jai-imageio-core:jar:1.4.0:compile
+[INFO] |  |  +- org.ghost4j:ghost4j:jar:1.0.1:compile
+[INFO] |  |  |  +- log4j:log4j:jar:1.2.17:compile
+[INFO] |  |  |  +- commons-beanutils:commons-beanutils:jar:1.9.2:compile
+[INFO] |  |  |  |  \- commons-collections:commons-collections:jar:3.2.1:compile
+[INFO] |  |  |  +- org.apache.xmlgraphics:xmlgraphics-commons:jar:1.4:compile
+[INFO] |  |  |  \- com.lowagie:itext:jar:2.1.7:compile
+[INFO] |  |  +- org.apache.pdfbox:pdfbox:jar:2.0.17:compile
+[INFO] |  |  |  +- org.apache.pdfbox:fontbox:jar:2.0.17:compile
+[INFO] |  |  |  \- commons-logging:commons-logging:jar:1.2:compile
+[INFO] |  |  +- org.apache.pdfbox:pdfbox-tools:jar:2.0.17:compile
+[INFO] |  |  |  \- org.apache.pdfbox:pdfbox-debugger:jar:2.0.17:compile
+[INFO] |  |  +- org.apache.pdfbox:jbig2-imageio:jar:3.0.2:compile
+[INFO] |  |  +- commons-io:commons-io:jar:2.6:compile
+[INFO] |  |  +- net.sourceforge.lept4j:lept4j:jar:1.12.3:compile
+[INFO] |  |  +- org.jboss:jboss-vfs:jar:3.2.14.Final:compile
+[INFO] |  |  |  \- org.jboss.logging:jboss-logging:jar:3.1.4.GA:compile
+[INFO] |  |  +- org.slf4j:jul-to-slf4j:jar:1.7.28:compile
+[INFO] |  |  +- org.slf4j:jcl-over-slf4j:jar:1.7.28:compile
+[INFO] |  |  \- org.slf4j:log4j-over-slf4j:jar:1.7.28:compile
+[INFO] |  \- org.slf4j:slf4j-nop:jar:1.7.28:compile
+[INFO] |     \- org.slf4j:slf4j-api:jar:1.7.28:compile
+[INFO] +- com.google.collections:google-collections:jar:1.0:compile
+[INFO] +- org.apache.commons:commons-lang3:jar:3.9:compile
+[INFO] +- com.google.code.gson:gson:jar:2.8.5:compile
+[INFO] \- junit:junit:jar:4.12:test
+[INFO]    \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 5.223 s
+[INFO] Finished at: 2020-07-23T17:16:56-03:00
+[INFO] Final Memory: 13M/232M
+[INFO] ------------------------------------------------------------------------

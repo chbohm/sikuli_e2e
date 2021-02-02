@@ -29,8 +29,7 @@ public class LinkedInApp extends ChromeApp {
 	private void initFromProperties() {
 		Properties p = new Properties();
 		try {
-			p.load(LinkedInApp.class.getClassLoader()
-					.getResourceAsStream("config.properties"));
+			p.load(LinkedInApp.class.getClassLoader().getResourceAsStream("config.properties"));
 			String similarityStr = (String) p.getOrDefault("pager.next.enabled.similarity", "0.98");
 			pagerNextEnabledSimilarity = Double.valueOf(similarityStr).floatValue();
 		} catch (IOException e) {
@@ -78,13 +77,14 @@ public class LinkedInApp extends ChromeApp {
 
 	public void gotoSearchPeople() {
 		click("linkedin/miRed.button.png");
-		wait("linkedin/contactos.menu.png", 5.0);
+
+		wait("linkedin/contactos.menu.png", 15.0);
 		click("linkedin/buscar.field.png");
 
-		waitAndClick("linkedin/buscar.personas.button.png");
-		waitAndClick("linkedin/buscar.todosLosFiltros.png");
+		waitAndClick("linkedin/buscar.personas.button.png", 10.0);
+		waitAndClick("linkedin/buscar.todosLosFiltros.png", 10.0);
 
-		wait("linkedin/buscar.aplicar.button.png", 5.0);
+		wait("linkedin/buscar.aplicar.button.png", 15.0);
 	}
 
 	public void search(SearchOptions options) {
@@ -103,7 +103,7 @@ public class LinkedInApp extends ChromeApp {
 		saveAllLinks(fileCsv);
 		waitMillis(1000);
 		ResultsProcessor.processFile(fileCsv);
-		Mouse.wheel(Mouse.WHEEL_DOWN, 100);
+		wheelUntilMatch(Mouse.WHEEL_DOWN, "linkedin/fin.resultado.png");
 		while (hasMorePages()) {
 			click("linkedin/pager.next.enabled.png");
 			wait("linkedin/search.result.title.png");
@@ -112,7 +112,7 @@ public class LinkedInApp extends ChromeApp {
 			saveAllLinks(fileCsv);
 			waitMillis(1000);
 			ResultsProcessor.processFile(fileCsv);
-			Mouse.wheel(Mouse.WHEEL_DOWN, 100);
+			wheelUntilMatch(Mouse.WHEEL_DOWN, "linkedin/fin.resultado.png");
 		}
 		ResultsProcessor.processResultsFolder(folder);
 
@@ -167,7 +167,7 @@ public class LinkedInApp extends ChromeApp {
 	}
 
 	public Region getCheckboxAtTheLeft(String image) {
-		return find(image).highlight(1).left(30);
+		return find(image).left(30);
 	}
 
 	public void configureDropDownTextField(String titleFieldImage, String criteria) {
@@ -187,8 +187,8 @@ public class LinkedInApp extends ChromeApp {
 	}
 
 	public <PSI> void configureTextField(PSI titleFieldImage, String criteria) {
-		Region textFieldUnderTitleRegion = scrollAndFind(titleFieldImage).below(40);
-		textFieldUnderTitleRegion.highlight();
+		Region textFieldUnderTitleRegion = scrollAndFind(titleFieldImage).below(10);
+		textFieldUnderTitleRegion.highlight(1);
 		click(textFieldUnderTitleRegion);
 		ctrl(textFieldUnderTitleRegion, "a");
 		type(textFieldUnderTitleRegion, Key.BACKSPACE);
@@ -203,6 +203,10 @@ public class LinkedInApp extends ChromeApp {
 			Mouse.wheel(Mouse.WHEEL_DOWN, 10);
 			result = find(image);
 			scrollAttemp++;
+		}
+		if (result != null) {
+			result = find(image);
+			result.highlight(0.1);
 		}
 		return result;
 	}
@@ -219,8 +223,10 @@ public class LinkedInApp extends ChromeApp {
 		SearchOptionsList options = null;
 		File file = new File("./searchOptionsList.json");
 		if (file.exists()) {
-			System.out.println("Using configuration options from ./searchoptions.json");
+			System.out.println("Using configuration options from " + file.getAbsolutePath());
 			options = SearchOptionsList.fromJson(readFile(file));
+			System.out.print(options.toJson());
+
 		} else {
 			System.out.println("Using configuration options from -D properties");
 			throw new IllegalArgumentException(String.format("The file %s does not exist", file.getAbsolutePath()));
